@@ -22,6 +22,7 @@ RUN apk add --no-cache \
       nodejs \
       npm \
       openssh-client \
+      python3 \
       ripgrep \
       ttyd \
     && npm install --global @openai/codex \
@@ -31,9 +32,14 @@ RUN apk add --no-cache \
     && chown -R codex:codex /data/codex
 
 COPY run.sh /run.sh
+COPY prepare-index.sh /usr/local/bin/prepare-ttyd-index
 COPY terminal.sh /usr/local/bin/codex-terminal
 COPY session.sh /usr/local/bin/codex-session
-RUN chmod 0755 /run.sh /usr/local/bin/codex-terminal /usr/local/bin/codex-session
+RUN chmod 0755 \
+      /run.sh \
+      /usr/local/bin/prepare-ttyd-index \
+      /usr/local/bin/codex-terminal \
+      /usr/local/bin/codex-session
 
 EXPOSE 8099
 CMD ["/run.sh"]
