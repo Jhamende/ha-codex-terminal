@@ -8,6 +8,11 @@ LABEL \
   io.hass.type="app" \
   io.hass.arch="${BUILD_ARCH}"
 
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TERM=xterm-256color \
+    COLORTERM=truecolor
+
 RUN apk add --no-cache \
       bash \
       ca-certificates \
