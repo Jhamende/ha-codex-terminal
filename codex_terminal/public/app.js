@@ -55,6 +55,7 @@
   function send(payload) {
     if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(payload));
   }
+
   function sendResize() {
     send({ type: 'resize', cols: terminal.cols, rows: terminal.rows });
   }
@@ -64,43 +65,30 @@
   new ResizeObserver(() => { fitAddon.fit(); sendResize(); }).observe(container);
 
   document.querySelectorAll('[data-key]').forEach((button) => {
-    button.addEventListener('click', () => send({ type: 'input', data: button.dataset.key }));
-  });
-  document.getElementById('scroll-top').addEventListener('click', () => {
-    send({ type: 'scroll', direction: 'up', amount: Math.max(5, terminal.rows - 2) });
-  });
-  document.getElementById('scroll-bottom').addEventListener('click', () => {
-    send({ type: 'scroll-bottom' });
-    terminal.scrollToBottom();
+    button.addEventListener('click', () => {
+      send({ type: 'input', data: button.dataset.key });
+      terminal.focus();
+    });
   });
   document.getElementById('keyboard').addEventListener('click', () => terminal.focus());
 
+  // Standard mobile terminal scrolling. This works for shell output; Codex
+  // conversations themselves can be reopened with /resume after reconnecting.
   let lastY = null;
-  let remainder = 0;
   container.addEventListener('touchstart', (event) => {
-    if (event.touches.length === 1) {
-      lastY = event.touches[0].clientY;
-      remainder = 0;
-    }
+    if (event.touches.length === 1) lastY = event.touches[0].clientY;
   }, { passive: true });
   container.addEventListener('touchmove', (event) => {
     if (event.touches.length !== 1 || lastY === null) return;
     const currentY = event.touches[0].clientY;
-    remainder += currentY - lastY;
+    const delta = currentY - lastY;
     lastY = currentY;
-    const steps = Math.trunc(Math.abs(remainder) / 18);
-    if (steps > 0) {
-      send({
-        type: 'scroll',
-        direction: remainder > 0 ? 'up' : 'down',
-        amount: Math.min(20, steps)
-      });
-      remainder += remainder > 0 ? -steps * 18 : steps * 18;
+    if (Math.abs(delta) >= 4) {
+      terminal.scrollLines(-Math.trunc(delta / 8));
       event.preventDefault();
     }
   }, { passive: false });
-  container.addEventListener('touchend', () => { lastY = null; remainder = 0; }, { passive: true });
-  container.addEventListener('touchcancel', () => { lastY = null; remainder = 0; }, { passive: true });
+  container.addEventListener('touchend', () => { lastY = null; }, { passive: true });
 
   connect();
 })();
