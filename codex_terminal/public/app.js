@@ -27,13 +27,17 @@
   }).catch(() => fitAddon.fit());
 
   function wsUrl() {
-    // Resolve the websocket relative to the current Ingress page. This keeps
-    // Home Assistant's /api/hassio_ingress/<token>/ prefix intact.
-    const url = new URL('ws', document.baseURI);
-    url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    url.search = '';
-    url.hash = '';
-    return url.toString();
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ingressMatch = location.pathname.match(/^(.*\/api\/hassio_ingress\/[^/]+)(?:\/.*)?$/);
+
+    if (ingressMatch) {
+      return `${protocol}//${location.host}${ingressMatch[1]}/ws`;
+    }
+
+    const currentPath = location.pathname.endsWith('/')
+      ? location.pathname
+      : `${location.pathname}/`;
+    return `${protocol}//${location.host}${currentPath}ws`;
   }
 
   function scheduleReconnect() {
@@ -45,6 +49,7 @@
     clearTimeout(reconnectTimer);
     const endpoint = wsUrl();
     status.textContent = 'Connexion…';
+    status.title = endpoint;
 
     try {
       socket = new WebSocket(endpoint);
