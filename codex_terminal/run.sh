@@ -14,7 +14,6 @@ read_option() {
   fi
 }
 
-START_CODEX="$(read_option start_codex_automatically true)"
 WORKING_DIRECTORY="$(read_option working_directory /config)"
 FONT_SIZE="$(read_option terminal_font_size 15)"
 
@@ -33,10 +32,11 @@ chown -R codex:codex /data/codex
 export CODEX_HOME="/data/codex/.codex"
 export HOME="/data/codex"
 export WORKING_DIRECTORY
-export START_CODEX
 
 echo "Starting Codex Terminal on Home Assistant Ingress port 8099"
 echo "Working directory: ${WORKING_DIRECTORY}"
+echo "Authentication and Codex startup are automatic."
+echo "The tmux session remains active until the add-on stops or restarts."
 
 exec ttyd \
   --port 8099 \
