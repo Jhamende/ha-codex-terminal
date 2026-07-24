@@ -1,7 +1,7 @@
 name: "Codex Terminal"
-version: "0.2.2"
+version: "0.3.0"
 slug: "codex_terminal"
-description: "OpenAI Codex CLI in a persistent Home Assistant browser terminal"
+description: "OpenAI Codex CLI in a persistent mobile-friendly Home Assistant terminal"
 url: "https://github.com/Jhamende/ha-codex-terminal"
 arch:
   - amd64
@@ -15,7 +15,7 @@ ingress_stream: true
 panel_icon: "mdi:console"
 panel_title: "Codex"
 panel_admin: true
-watchdog: "tcp://[HOST]:[PORT:8099]"
+watchdog: "http://[HOST]:[PORT:8099]/health"
 map:
   - type: homeassistant_config
     read_only: false
