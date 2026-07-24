@@ -1,0 +1,33 @@
+name: "Codex Terminal"
+version: "0.1.0"
+slug: "codex_terminal"
+description: "OpenAI Codex CLI in a Home Assistant browser terminal"
+url: "https://github.com/Jhamende/ha-codex-terminal"
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+init: true
+ingress: true
+ingress_port: 8099
+ingress_stream: true
+panel_icon: "mdi:console"
+panel_title: "Codex"
+panel_admin: true
+watchdog: "tcp://[HOST]:[PORT:8099]"
+map:
+  - type: homeassistant_config
+    read_only: false
+    path: /config
+  - type: share
+    read_only: false
+    path: /share
+options:
+  start_codex_automatically: true
+  working_directory: "/config"
+  terminal_font_size: 15
+schema:
+  start_codex_automatically: bool
+  working_directory: str
+  terminal_font_size: "int(10,30)"
