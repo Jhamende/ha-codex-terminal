@@ -66,8 +66,13 @@
   document.querySelectorAll('[data-key]').forEach((button) => {
     button.addEventListener('click', () => send({ type: 'input', data: button.dataset.key }));
   });
-  document.getElementById('scroll-top').addEventListener('click', () => terminal.scrollPages(-1));
-  document.getElementById('scroll-bottom').addEventListener('click', () => terminal.scrollToBottom());
+  document.getElementById('scroll-top').addEventListener('click', () => {
+    send({ type: 'scroll', direction: 'up', amount: Math.max(5, terminal.rows - 2) });
+  });
+  document.getElementById('scroll-bottom').addEventListener('click', () => {
+    send({ type: 'scroll-bottom' });
+    terminal.scrollToBottom();
+  });
   document.getElementById('keyboard').addEventListener('click', () => terminal.focus());
 
   let lastY = null;
@@ -83,14 +88,19 @@
     const currentY = event.touches[0].clientY;
     remainder += currentY - lastY;
     lastY = currentY;
-    const lines = Math.trunc(remainder / 12);
-    if (lines !== 0) {
-      terminal.scrollLines(-lines);
-      remainder -= lines * 12;
+    const steps = Math.trunc(Math.abs(remainder) / 18);
+    if (steps > 0) {
+      send({
+        type: 'scroll',
+        direction: remainder > 0 ? 'up' : 'down',
+        amount: Math.min(20, steps)
+      });
+      remainder += remainder > 0 ? -steps * 18 : steps * 18;
       event.preventDefault();
     }
   }, { passive: false });
   container.addEventListener('touchend', () => { lastY = null; remainder = 0; }, { passive: true });
+  container.addEventListener('touchcancel', () => { lastY = null; remainder = 0; }, { passive: true });
 
   connect();
 })();
