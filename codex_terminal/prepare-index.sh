@@ -9,7 +9,9 @@ if [[ -s "$OUTPUT" ]]; then
   exit 0
 fi
 
-ttyd --interface 127.0.0.1 --port "$PORT" --readonly /bin/sh -c 'sleep 30' >/tmp/ttyd-bootstrap.log 2>&1 &
+# ttyd is read-only by default. Start a short-lived local instance only to
+# retrieve its native bundled page before injecting the quick-action toolbar.
+ttyd --interface 127.0.0.1 --port "$PORT" /bin/sh -c 'sleep 30' >/tmp/ttyd-bootstrap.log 2>&1 &
 bootstrap_pid=$!
 trap 'kill "$bootstrap_pid" 2>/dev/null || true' EXIT
 
@@ -50,7 +52,8 @@ toolbar = r'''
   const bottom=()=>{
     const viewport=document.querySelector('.xterm-viewport');
     if(viewport){viewport.scrollTop=viewport.scrollHeight;}
-    textarea()?.focus();
+    const input=textarea();
+    if(input){input.focus();}
   };
   const sendText=(text)=>{
     const input=textarea();
