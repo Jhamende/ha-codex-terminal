@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+set -Euo pipefail
 
 cd "${WORKING_DIRECTORY:-/config}"
 
@@ -15,19 +15,22 @@ BANNER
 pwd
 echo
 
-if ! codex login status >/dev/null 2>&1; then
+while ! codex login status >/dev/null 2>&1; do
   echo "Aucune authentification Codex valide détectée."
   echo "Démarrage automatique de la connexion par code appareil..."
   echo
 
-  if ! codex login --device-auth; then
+  if codex login --device-auth; then
     echo
-    echo "La connexion Codex a échoué ou a été annulée."
-    echo "Une nouvelle tentative sera proposée dans 10 secondes."
-    sleep 10
-    exec "$0"
+    echo "Authentification réussie."
+    break
   fi
-fi
+
+  echo
+  echo "La connexion Codex a échoué ou a été annulée."
+  echo "Nouvelle tentative automatique dans 10 secondes..."
+  sleep 10
+done
 
 echo
 echo "Authentification Codex détectée. Démarrage automatique..."
