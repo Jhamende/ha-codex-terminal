@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.3
+
+- Suppression de l’interface personnalisée Node.js, WebSocket et xterm.js
+- Retour au terminal web classique `ttyd`, déjà compatible avec Home Assistant Ingress
+- Suppression de la construction manuelle du chemin WebSocket
+- Conservation d’une session terminal indépendante par connexion, sans `tmux`
+- Démarrage automatique de Codex et authentification persistante dans `/data`
+- Historique configuré à 50 000 lignes et police configurable
+- Utilisation de `/resume` pour reprendre une conversation Codex après reconnexion
+
 ## 0.4.2
 
 - Correction du chemin WebSocket Home Assistant Ingress
