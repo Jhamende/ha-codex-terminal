@@ -15,7 +15,7 @@ read_option() {
 }
 
 WORKING_DIRECTORY="$(read_option working_directory /config)"
-FONT_SIZE="$(read_option terminal_font_size 15)"
+FONT_SIZE="$(read_option terminal_font_size 13)"
 
 case "${WORKING_DIRECTORY}" in
   /config|/config/*|/share|/share/*|/data|/data/*) ;;
@@ -33,16 +33,21 @@ export CODEX_HOME="/data/codex/.codex"
 export HOME="/data/codex"
 export WORKING_DIRECTORY
 
-echo "Starting Codex Terminal on Home Assistant Ingress port 8099"
-echo "Working directory: ${WORKING_DIRECTORY}"
-echo "Authentication and Codex startup are automatic."
-echo "The tmux session remains active until the add-on stops or restarts."
+printf 'Starting Codex Terminal on Home Assistant Ingress port 8099\n'
+printf 'Working directory: %s\n' "${WORKING_DIRECTORY}"
+printf 'Terminal scrollback: 50000 lines\n'
+printf 'The tmux session remains active until the add-on stops or restarts.\n'
 
 exec ttyd \
   --port 8099 \
   --interface 0.0.0.0 \
   --writable \
   --check-origin \
+  --terminal-type xterm-256color \
   --client-option "fontSize=${FONT_SIZE}" \
+  --client-option "scrollback=50000" \
+  --client-option "unicodeVersion=11" \
+  --client-option "rendererType=canvas" \
   --client-option "disableLeaveAlert=true" \
+  --client-option "disableResizeOverlay=true" \
   /usr/local/bin/codex-terminal
