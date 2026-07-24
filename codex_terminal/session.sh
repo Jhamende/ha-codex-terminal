@@ -34,15 +34,16 @@ done
 
 echo
 echo "Authentification Codex détectée. Démarrage automatique..."
+echo "Après une reconnexion, utilise /resume pour reprendre une conversation."
 echo
 
-while true; do
-  codex
-  exit_code=$?
+codex
+exit_code=$?
 
-  echo
-  echo "Codex s'est arrêté avec le code ${exit_code}."
-  echo "Redémarrage automatique dans 2 secondes..."
-  echo "Pour arrêter complètement la session, arrête l'add-on Home Assistant."
-  sleep 2
-done
+echo
+echo "Codex s'est arrêté avec le code ${exit_code}."
+echo "Tu es maintenant dans un terminal classique. Relance Codex avec : codex"
+echo "Puis utilise /resume pour reprendre une conversation."
+echo
+
+exec bash --login
