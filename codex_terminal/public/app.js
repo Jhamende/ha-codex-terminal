@@ -4,6 +4,7 @@
   const fitAddon = new FitAddon.FitAddon();
   const linksAddon = new WebLinksAddon.WebLinksAddon();
   let socket;
+  let reconnectTimer;
 
   const terminal = new Terminal({
     cursorBlink: true,
@@ -19,37 +20,75 @@
   terminal.loadAddon(linksAddon);
   terminal.open(container);
 
-  fetch('./config.json').then((r) => r.json()).then((config) => {
+  fetch('./config.json', { cache: 'no-store' }).then((r) => r.json()).then((config) => {
     terminal.options.fontSize = config.fontSize || 13;
     terminal.options.scrollback = config.scrollback || 50000;
     fitAddon.fit();
   }).catch(() => fitAddon.fit());
 
   function wsUrl() {
-    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const base = location.pathname.endsWith('/') ? location.pathname : `${location.pathname}/`;
-    return `${protocol}//${location.host}${base}ws`;
+    // Resolve the websocket relative to the current Ingress page. This keeps
+    // Home Assistant's /api/hassio_ingress/<token>/ prefix intact.
+    const url = new URL('ws', document.baseURI);
+    url.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    url.search = '';
+    url.hash = '';
+    return url.toString();
+  }
+
+  function scheduleReconnect() {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(connect, 2000);
   }
 
   function connect() {
+    clearTimeout(reconnectTimer);
+    const endpoint = wsUrl();
     status.textContent = 'Connexion…';
-    socket = new WebSocket(wsUrl());
+
+    try {
+      socket = new WebSocket(endpoint);
+    } catch (error) {
+      status.textContent = `Erreur WebSocket : ${error.message}`;
+      scheduleReconnect();
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      if (socket.readyState !== WebSocket.OPEN) {
+        status.textContent = 'Connexion WebSocket impossible — nouvelle tentative…';
+        socket.close();
+      }
+    }, 8000);
+
     socket.addEventListener('open', () => {
+      clearTimeout(timeout);
       status.textContent = 'Connecté';
       fitAddon.fit();
       sendResize();
       terminal.focus();
     });
+
     socket.addEventListener('message', (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'data') terminal.write(message.data);
-      if (message.type === 'exit') status.textContent = `Session terminée (${message.exitCode})`;
+      try {
+        const message = JSON.parse(event.data);
+        if (message.type === 'data') terminal.write(message.data);
+        if (message.type === 'exit') status.textContent = `Session terminée (${message.exitCode})`;
+      } catch (error) {
+        status.textContent = `Réponse invalide : ${error.message}`;
+      }
     });
-    socket.addEventListener('close', () => {
-      status.textContent = 'Déconnecté — reconnexion…';
-      setTimeout(connect, 1500);
+
+    socket.addEventListener('close', (event) => {
+      clearTimeout(timeout);
+      status.textContent = `Déconnecté (${event.code}) — reconnexion…`;
+      scheduleReconnect();
     });
-    socket.addEventListener('error', () => socket.close());
+
+    socket.addEventListener('error', () => {
+      clearTimeout(timeout);
+      status.textContent = 'Erreur de connexion WebSocket';
+    });
   }
 
   function send(payload) {
@@ -72,8 +111,6 @@
   });
   document.getElementById('keyboard').addEventListener('click', () => terminal.focus());
 
-  // Standard mobile terminal scrolling. This works for shell output; Codex
-  // conversations themselves can be reopened with /resume after reconnecting.
   let lastY = null;
   container.addEventListener('touchstart', (event) => {
     if (event.touches.length === 1) lastY = event.touches[0].clientY;
