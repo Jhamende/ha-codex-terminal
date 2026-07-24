@@ -1,5 +1,5 @@
 name: "Codex Terminal"
-version: "0.2.1"
+version: "0.2.2"
 slug: "codex_terminal"
 description: "OpenAI Codex CLI in a persistent Home Assistant browser terminal"
 url: "https://github.com/Jhamende/ha-codex-terminal"
