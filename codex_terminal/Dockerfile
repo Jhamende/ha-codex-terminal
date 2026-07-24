@@ -15,7 +15,7 @@ ENV LANG=C.UTF-8 \
 
 WORKDIR /opt/codex-terminal
 
-RUN apk add --no-cache bash ca-certificates curl git jq nodejs npm openssh-client python3 make g++ ripgrep tmux
+RUN apk add --no-cache bash ca-certificates curl git jq nodejs npm openssh-client python3 make g++ ripgrep
 
 COPY package.json ./package.json
 RUN npm install --omit=dev \
