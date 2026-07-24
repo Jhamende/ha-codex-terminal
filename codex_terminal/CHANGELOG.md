@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.4
+
+- Ajout d’une barre d’actions flottante dans l’interface ttyd
+- Ajout d’un bouton `↓ Bas` pour revenir immédiatement à la dernière ligne du terminal
+- Ajout d’un bouton `/resume` pour envoyer et valider directement la commande Codex
+- Conservation du terminal ttyd natif et de sa compatibilité Home Assistant Ingress
+- Génération automatique d’un index ttyd personnalisé au démarrage
+
 ## 0.4.3
 
 - Suppression de l’interface personnalisée Node.js, WebSocket et xterm.js
