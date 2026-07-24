@@ -18,6 +18,7 @@ RUN apk add --no-cache \
       npm \
       openssh-client \
       ripgrep \
+      tmux \
       ttyd \
     && npm install --global @openai/codex \
     && npm cache clean --force \
@@ -27,8 +28,12 @@ RUN apk add --no-cache \
 
 COPY run.sh /run.sh
 COPY terminal.sh /usr/local/bin/codex-terminal
+COPY session.sh /usr/local/bin/codex-session
 
-RUN chmod 0755 /run.sh /usr/local/bin/codex-terminal
+RUN chmod 0755 \
+      /run.sh \
+      /usr/local/bin/codex-terminal \
+      /usr/local/bin/codex-session
 
 EXPOSE 8099
 
