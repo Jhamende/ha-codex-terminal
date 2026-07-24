@@ -1,7 +1,7 @@
 name: "Codex Terminal"
-version: "0.3.1"
+version: "0.4.0"
 slug: "codex_terminal"
-description: "OpenAI Codex CLI in a persistent mobile-friendly Home Assistant terminal"
+description: "OpenAI Codex CLI in a classic mobile-friendly Home Assistant terminal"
 url: "https://github.com/Jhamende/ha-codex-terminal"
 arch:
   - amd64
