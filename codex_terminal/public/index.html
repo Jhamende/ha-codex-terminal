@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#111827">
+  <title>Codex Terminal</title>
+  <link rel="stylesheet" href="./vendor/xterm.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="app">
+    <div id="status" aria-live="polite">Connexion…</div>
+    <div id="terminal" aria-label="Terminal Codex"></div>
+    <nav id="mobile-tools" aria-label="Commandes terminal">
+      <button data-key="\u001b[A" title="Flèche haut">↑</button>
+      <button data-key="\u001b[B" title="Flèche bas">↓</button>
+      <button data-key="\u0003" title="Ctrl+C">Ctrl+C</button>
+      <button id="scroll-top" title="Historique précédent">Page ↑</button>
+      <button id="scroll-bottom" title="Retour en bas">Bas</button>
+      <button id="keyboard" title="Afficher le clavier">Clavier</button>
+    </nav>
+  </main>
+  <script src="./vendor/xterm.js"></script>
+  <script src="./vendor/addon-fit.js"></script>
+  <script src="./vendor/addon-web-links.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
