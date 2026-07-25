@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.5
+
+- Ajout d’un bouton `Esc` dans la barre d’actions flottante
+- Envoi direct de la touche Échap au terminal ttyd
+- Conservation des boutons `↓ Bas` et `/resume`
+
 ## 0.4.4
 
 - Ajout d’une barre d’actions flottante dans l’interface ttyd
