@@ -43,6 +43,7 @@ toolbar = r'''
 .xterm{padding-bottom:62px!important}
 </style>
 <div id="codex-toolbar" aria-label="Commandes rapides">
+  <button type="button" id="codex-esc">Esc</button>
   <button type="button" id="codex-bottom">↓ Bas</button>
   <button type="button" id="codex-resume">/resume</button>
 </div>
@@ -55,6 +56,14 @@ toolbar = r'''
     const input=textarea();
     if(input){input.focus();}
   };
+  const dispatchKey=(key,code,keyCode)=>{
+    const input=textarea();
+    if(!input)return;
+    input.focus();
+    for(const type of ['keydown','keypress','keyup']){
+      input.dispatchEvent(new KeyboardEvent(type,{key,code,keyCode,which:keyCode,bubbles:true,cancelable:true}));
+    }
+  };
   const sendText=(text)=>{
     const input=textarea();
     if(!input)return;
@@ -66,12 +75,11 @@ toolbar = r'''
       input.dispatchEvent(new InputEvent('input',{bubbles:true,data:text,inputType:'insertText'}));
     }
     setTimeout(()=>{
-      input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true,cancelable:true}));
-      input.dispatchEvent(new KeyboardEvent('keypress',{key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true,cancelable:true}));
-      input.dispatchEvent(new KeyboardEvent('keyup',{key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true,cancelable:true}));
+      dispatchKey('Enter','Enter',13);
       bottom();
     },50);
   };
+  document.getElementById('codex-esc').addEventListener('click',()=>dispatchKey('Escape','Escape',27));
   document.getElementById('codex-bottom').addEventListener('click',bottom);
   document.getElementById('codex-resume').addEventListener('click',()=>sendText('/resume'));
 })();
