@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.6
+
+- Ajout de l’option `auto_resume_last_session` pour reprendre automatiquement la dernière session avec `codex resume --last`
+- Ajout de l’option `permission_mode`
+- Ajout du mode `default` utilisant les permissions Codex standard
+- Ajout du mode `full-auto` autorisant l’écriture et les commandes dans le sandbox du dossier de travail
+- Ajout du mode `full-access` désactivant les confirmations et le sandbox Codex
+- Affichage du mode de permissions et de la reprise automatique dans les journaux de démarrage
+- Validation des valeurs de configuration avant le lancement du terminal
+
 ## 0.4.5
 
 - Ajout d’un bouton `Esc` dans la barre d’actions flottante
