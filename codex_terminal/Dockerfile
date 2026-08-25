@@ -25,7 +25,8 @@ RUN apk add --no-cache \
       python3 \
       ripgrep \
       ttyd \
-    && npm install --global @openai/codex \
+    && npm install --global @openai/codex@0.149.1 \
+    && codex --version \
     && npm cache clean --force \
     && adduser -D -h /data/codex codex \
     && mkdir -p /data/codex/.codex /config /share \
