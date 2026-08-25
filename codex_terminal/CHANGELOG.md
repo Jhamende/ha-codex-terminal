@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.7
+
+- Mise à jour de Codex CLI vers la version stable `0.149.1`
+- Version Codex désormais figée explicitement dans le Dockerfile pour garantir des builds reproductibles
+- Ajout d’un contrôle `codex --version` pendant la construction de l’image
+
 ## 0.4.6
 
 - Ajout de l’option `auto_resume_last_session` pour reprendre automatiquement la dernière session avec `codex resume --last`
