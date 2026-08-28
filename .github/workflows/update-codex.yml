@@ -1,0 +1,134 @@
+name: Update Codex CLI
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-codex-cli
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check latest stable Codex version
+        id: codex
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          latest="$(npm view @openai/codex version)"
+          current="$(sed -n 's/.*@openai\/codex@\([0-9][0-9.]*\).*/\1/p' codex_terminal/Dockerfile | head -n1)"
+
+          if [[ -z "$latest" || -z "$current" ]]; then
+            echo "Unable to determine Codex versions."
+            echo "latest=$latest"
+            echo "current=$current"
+            exit 1
+          fi
+
+          echo "Latest stable Codex: $latest"
+          echo "Current bundled Codex: $current"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+
+          if [[ "$latest" == "$current" ]]; then
+            echo "update=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "update=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update add-on files
+        if: steps.codex.outputs.update == 'true'
+        env:
+          CODEX_OLD: ${{ steps.codex.outputs.current }}
+          CODEX_NEW: ${{ steps.codex.outputs.latest }}
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          old = os.environ["CODEX_OLD"]
+          new = os.environ["CODEX_NEW"]
+
+          dockerfile = Path("codex_terminal/Dockerfile")
+          docker = dockerfile.read_text(encoding="utf-8")
+          docker, count = re.subn(
+              r"@openai/codex@[0-9]+(?:\.[0-9]+){1,3}(?:[-+][0-9A-Za-z.-]+)?",
+              f"@openai/codex@{new}",
+              docker,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Could not update Codex version in Dockerfile")
+          dockerfile.write_text(docker, encoding="utf-8")
+
+          config_file = Path("codex_terminal/config.yaml")
+          config = config_file.read_text(encoding="utf-8")
+          match = re.search(r'^version:\s*"?(\d+)\.(\d+)\.(\d+)"?\s*$', config, re.M)
+          if not match:
+              raise SystemExit("Could not find add-on version in config.yaml")
+
+          major, minor, patch = map(int, match.groups())
+          addon_old = f"{major}.{minor}.{patch}"
+          addon_new = f"{major}.{minor}.{patch + 1}"
+          config = config[:match.start()] + f'version: "{addon_new}"' + config[match.end():]
+          config_file.write_text(config, encoding="utf-8")
+
+          changelog_file = Path("codex_terminal/CHANGELOG.md")
+          changelog = changelog_file.read_text(encoding="utf-8")
+          header = "# Changelog\n"
+          if not changelog.startswith(header):
+              raise SystemExit("Unexpected CHANGELOG.md format")
+
+          entry = (
+              f"\n## {addon_new}\n\n"
+              f"- Mise à jour automatique de Codex CLI de `{old}` vers `{new}`\n"
+              f"- Version détectée via le canal stable npm `@openai/codex`\n"
+          )
+          changelog = header + entry + changelog[len(header):].lstrip("\n")
+          changelog_file.write_text(changelog, encoding="utf-8")
+
+          Path("/tmp/addon_version").write_text(addon_new, encoding="utf-8")
+          PY
+
+      - name: Verify requested Codex package exists
+        if: steps.codex.outputs.update == 'true'
+        run: npm view "@openai/codex@${{ steps.codex.outputs.latest }}" version
+
+      - name: Commit and push update
+        if: steps.codex.outputs.update == 'true'
+        env:
+          CODEX_NEW: ${{ steps.codex.outputs.latest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          addon_version="$(cat /tmp/addon_version)"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add codex_terminal/Dockerfile codex_terminal/config.yaml codex_terminal/CHANGELOG.md
+          git commit -m "Update Codex CLI to ${CODEX_NEW} (add-on ${addon_version})"
+          git push
+
+      - name: No update available
+        if: steps.codex.outputs.update != 'true'
+        run: echo "Codex CLI is already on the latest stable npm version."
