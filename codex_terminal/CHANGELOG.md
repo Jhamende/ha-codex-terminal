@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.8
+
+- Mise à jour de Codex CLI vers la version stable `0.150.1`
+- Conservation du contrôle `codex --version` pendant la construction de l’image
+- Aucune modification des options de session, de permissions ou de l’interface ttyd
+
 ## 0.4.7
 
 - Mise à jour de Codex CLI vers la version stable `0.149.1`
