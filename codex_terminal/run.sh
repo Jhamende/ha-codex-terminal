@@ -66,5 +66,5 @@ exec ttyd \
   --client-option "fontSize=${FONT_SIZE}" \
   --client-option "scrollback=50000" \
   --client-option "disableLeaveAlert=true" \
-  --client-option "rendererType=canvas" \
+  --client-option "rendererType=dom" \
   /usr/local/bin/codex-terminal
