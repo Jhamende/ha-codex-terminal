@@ -36,11 +36,13 @@ COPY run.sh /run.sh
 COPY prepare-index.sh /usr/local/bin/prepare-ttyd-index
 COPY terminal.sh /usr/local/bin/codex-terminal
 COPY session.sh /usr/local/bin/codex-session
+COPY last-exchanges.py /usr/local/bin/codex-last-exchanges
 RUN chmod 0755 \
       /run.sh \
       /usr/local/bin/prepare-ttyd-index \
       /usr/local/bin/codex-terminal \
-      /usr/local/bin/codex-session
+      /usr/local/bin/codex-session \
+      /usr/local/bin/codex-last-exchanges
 
 EXPOSE 8099
 CMD ["/run.sh"]
