@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.14
+
+- Ajout du bouton `↶ Derniers` dans la barre d’actions du terminal
+- Ajout de l’utilitaire local `codex-last-exchanges` pour lire les derniers échanges réellement persistés dans le rollout JSONL Codex
+- Le bouton utilise le mode shell local Codex (`!commande`) : aucun appel au modèle et aucun nouveau tour de conversation
+- Affichage des 12 derniers messages utilisateur/assistant détectés, de la session lue et de sa taille
+- Lecture limitée aux dernières 20 000 lignes / 32 MiB du rollout afin de rester rapide même sur de très grosses sessions
+- Déduplication des messages persistés sous plusieurs formes par Codex
+- Lecture strictement seule : aucun fichier de session n’est modifié ou tronqué
+
 ## 0.4.13
 
 - Remplacement du renderer ttyd `canvas` par `dom` pour permettre la sélection et la copie de texte dans le terminal
