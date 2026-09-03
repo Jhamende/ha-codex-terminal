@@ -37,14 +37,15 @@ output = Path(sys.argv[2])
 
 toolbar = r'''
 <style>
-#codex-toolbar{position:fixed;z-index:9999;right:10px;bottom:12px;display:flex;gap:8px;padding:6px;border-radius:12px;background:rgba(17,24,39,.88);box-shadow:0 3px 14px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
-#codex-toolbar button{min-height:42px;padding:0 14px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:#263244;color:#fff;font:600 14px system-ui,sans-serif;touch-action:manipulation}
+#codex-toolbar{position:fixed;z-index:9999;right:10px;bottom:12px;display:flex;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 20px);gap:8px;padding:6px;border-radius:12px;background:rgba(17,24,39,.88);box-shadow:0 3px 14px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+#codex-toolbar button{min-height:42px;padding:0 12px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:#263244;color:#fff;font:600 14px system-ui,sans-serif;touch-action:manipulation;white-space:nowrap}
 #codex-toolbar button:active{transform:scale(.96);background:#37465d}
-.xterm{padding-bottom:62px!important}
+.xterm{padding-bottom:68px!important}
 </style>
 <div id="codex-toolbar" aria-label="Commandes rapides">
   <button type="button" id="codex-esc">Esc</button>
   <button type="button" id="codex-bottom">↓ Bas</button>
+  <button type="button" id="codex-latest" title="Afficher les derniers échanges réellement présents dans le rollout Codex">↶ Derniers</button>
   <button type="button" id="codex-resume">/resume</button>
 </div>
 <script>
@@ -81,6 +82,7 @@ toolbar = r'''
   };
   document.getElementById('codex-esc').addEventListener('click',()=>dispatchKey('Escape','Escape',27));
   document.getElementById('codex-bottom').addEventListener('click',bottom);
+  document.getElementById('codex-latest').addEventListener('click',()=>sendText('!/usr/local/bin/codex-last-exchanges'));
   document.getElementById('codex-resume').addEventListener('click',()=>sendText('/resume'));
 })();
 </script>
