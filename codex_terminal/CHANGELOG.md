@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.13
+
+- Remplacement du renderer ttyd `canvas` par `dom` pour permettre la sélection et la copie de texte dans le terminal
+- Conservation du scrollback ttyd à 50 000 lignes : il s’agit uniquement de l’historique visuel du terminal et non du contexte de conversation Codex
+- Aucun effacement automatique des anciennes sessions Codex
+
 ## 0.4.12
 
 - Mise à jour automatique de Codex CLI de `0.152.1` vers `0.153.0`
