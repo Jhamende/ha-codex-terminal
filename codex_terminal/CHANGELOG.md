@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.15
+
+- Mise à jour automatique de Codex CLI de `0.153.0` vers `0.153.2`
+- Version détectée via le canal stable npm `@openai/codex`
 ## 0.4.14
 
 - Ajout du bouton `↶ Derniers` dans la barre d’actions du terminal
