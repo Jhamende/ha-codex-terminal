@@ -4,7 +4,7 @@ ARG BUILD_ARCH
 LABEL io.hass.version="${BUILD_VERSION}" io.hass.type="app" io.hass.arch="${BUILD_ARCH}"
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 TERM=xterm-256color COLORTERM=truecolor CHROME_BIN=/usr/bin/chromium-browser CHROMIUM_BIN=/usr/bin/chromium-browser
 RUN apk add --no-cache bash ca-certificates chromium curl git jq nodejs npm openssh-client python3 ripgrep screen ttyd \
-    && npm install --global @openai/codex@0.157.0 \
+    && npm install --global @openai/codex@0.157.1 \
     && codex --version \
     && npm cache clean --force \
     && mkdir -p /data/codex/.codex /data/codex/uploads /data/codex/screenshots /config /share /app/public

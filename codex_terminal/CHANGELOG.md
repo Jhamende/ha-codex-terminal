@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.11
+
+- Mise à jour automatique de Codex CLI de `0.157.0` vers `0.157.1`
+- Version détectée via le canal stable npm `@openai/codex`
 ## 0.5.10
 
 - Détection de l’état d’authentification via `account/read`
