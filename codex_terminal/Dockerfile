@@ -24,6 +24,7 @@ RUN apk add --no-cache \
       openssh-client \
       python3 \
       ripgrep \
+      screen \
       ttyd \
     && npm install --global @openai/codex@0.157.0 \
     && codex --version \
