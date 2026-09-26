@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.6
+
+- Correction du mode Full Access sur les conversations déjà actives
+- Utilisation de `thread/settings/update` pour appliquer immédiatement `approvalPolicy: never` et `sandboxPolicy: dangerFullAccess`
+- Correction du format structuré des politiques sandbox envoyées à Codex app-server
+- Retrait du paquet `bubblewrap` système, incompatible avec les restrictions de mount/namespaces du conteneur Home Assistant
+- Retour au mécanisme bubblewrap embarqué/fallback de Codex pour les modes sandboxés
+- Chromium reste installé et disponible pour les tests navigateur
+
 ## 0.5.5
 
 - Rétablissement de Chromium après confirmation que la 0.5.3 s’installe correctement sur Home Assistant
