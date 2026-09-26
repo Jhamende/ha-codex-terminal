@@ -1,4 +1,4 @@
-# Changelog
+# Changelog\n\n## 0.4.24\n\n- Ajout de l’option `persistent_screen` (désactivée par défaut)\n- Installation de GNU Screen dans l’image de l’add-on\n- Quand l’option est activée, la session Codex continue de tourner après fermeture du panneau Home Assistant\n- À la réouverture, ttyd se rattache automatiquement à la même session `codex-terminal` avec `screen -D -RR`\n- Un redémarrage de l’add-on/Home Assistant met fin à la session Screen, conformément à l’isolation du conteneur\n\n# Changelog
 
 ## 0.4.23
 
