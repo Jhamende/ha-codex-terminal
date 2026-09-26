@@ -6,7 +6,7 @@ let state={threadId:null,messages:[],activities:[],models:[],selectedModel:null,
 try{state={...state,...JSON.parse(fs.readFileSync(STATE,'utf8'))}}catch{}
 const save=()=>fs.writeFileSync(STATE,JSON.stringify(state,null,2));
 let rpcId=1,pending=new Map(),ready=false,buf='',turnStartedAt=null;
-const codex=spawn('codex',['app-server','--listen','stdio://'],{env:{...process.env,HOME:DATA,CODEX_HOME:path.join(DATA,'.codex')},stdio:['pipe','pipe','inherit']});
+const appServerArgs=(state.permissionMode==='full-access'?['--dangerously-bypass-approvals-and-sandbox']:[]).concat(['app-server','--listen','stdio://']);\nconst codex=spawn('codex',appServerArgs,{env:{...process.env,HOME:DATA,CODEX_HOME:path.join(DATA,'.codex')},stdio:['pipe','pipe','inherit']});
 const rpc=(method,params={})=>new Promise((resolve,reject)=>{const id=rpcId++;pending.set(id,{resolve,reject});codex.stdin.write(JSON.stringify({id,method,params})+'\n')});
 function broadcast(o){const s=JSON.stringify(o);wss.clients.forEach(c=>c.readyState===WebSocket.OPEN&&c.send(s))}
 function activity(item,status='running'){
