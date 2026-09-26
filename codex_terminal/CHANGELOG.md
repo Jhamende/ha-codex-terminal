@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.2
+
+- Ajout du sélecteur de modèle dans l’en-tête de l’interface Chat
+- Catalogue chargé dynamiquement depuis l’API `model/list` de Codex app-server
+- Option `Modèle auto` pour conserver le choix recommandé par Codex
+- Persistance du modèle sélectionné et application aux nouveaux tours via `turn/start`
+- Installation de Chromium dans l’image de l’add-on pour les tests et validations visuelles headless
+- Ajout des variables `CHROME_BIN` et `CHROMIUM_BIN`
+- Création du dossier persistant `/data/codex/screenshots` pour les captures produites par les outils navigateur
+- Conservation des étapes repliables et de l’affichage `Terminé en X min Y s`
+- Nettoyage de l’ancienne entrée de changelog 0.4.24 mal formatée
+
 ## 0.5.1
 
 - Affichage des commandes, modifications de fichiers et appels d’outils sous forme d’étapes repliables dans la conversation
@@ -23,8 +35,6 @@
 - Ajout d’un bouton Nouvelle conversation
 - Sélection visuelle des modes Standard, Full Auto et Full Access
 - Conservation de l’authentification et des rollouts Codex existants dans `/data/codex/.codex`
-
-## 0.4.24\n\n- Ajout de l’option `persistent_screen` (désactivée par défaut)\n- Installation de GNU Screen dans l’image de l’add-on\n- Quand l’option est activée, la session Codex continue de tourner après fermeture du panneau Home Assistant\n- À la réouverture, ttyd se rattache automatiquement à la même session `codex-terminal` avec `screen -D -RR`\n- Un redémarrage de l’add-on/Home Assistant met fin à la session Screen, conformément à l’isolation du conteneur\n\n# Changelog
 
 ## 0.4.25
 
