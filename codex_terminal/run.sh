@@ -18,7 +18,7 @@ read_option() {
 WORKING_DIRECTORY="$(read_option working_directory /config)"
 FONT_SIZE="$(read_option terminal_font_size 13)"
 AUTO_RESUME_LAST_SESSION="$(read_option auto_resume_last_session false)"
-PERMISSION_MODE="$(read_option permission_mode default)"
+PERMISSION_MODE="$(read_option permission_mode default)"\nPERSISTENT_SCREEN="$(read_option persistent_screen false)"
 
 case "$WORKING_DIRECTORY" in
   /config|/config/*|/share|/share/*|/data|/data/*) ;;
@@ -42,7 +42,7 @@ export HOME=/data/codex
 export CODEX_HOME=/data/codex/.codex
 export WORKING_DIRECTORY
 export AUTO_RESUME_LAST_SESSION
-export PERMISSION_MODE
+export PERMISSION_MODE\nexport PERSISTENT_SCREEN
 export LANG=C.UTF-8
 export LC_ALL=C.UTF-8
 export TERM=xterm-256color
@@ -67,4 +67,4 @@ exec ttyd \
   --client-option "scrollback=50000" \
   --client-option "disableLeaveAlert=true" \
   --client-option "rendererType=dom" \
-  /usr/local/bin/codex-terminal
+  "${TERMINAL_COMMAND[@]}"
