@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.1
+
+- Affichage des commandes, modifications de fichiers et appels d’outils sous forme d’étapes repliables dans la conversation
+- Conservation des outputs détaillés accessibles en cliquant sur une étape
+- Persistance des étapes dans `ui-state.json` lors de la navigation dans Home Assistant
+- Mesure côté backend de la durée réelle de chaque tour Codex
+- Affichage `Terminé en X min Y s` à la fin du traitement
+- Conservation de la dernière durée après reconnexion à l’interface
+
 ## 0.5.0
 
 - Nouvelle interface principale de type chat, conçue pour Home Assistant et les écrans mobiles
