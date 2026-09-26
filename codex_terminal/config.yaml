@@ -1,5 +1,5 @@
 name: "Codex Terminal"
-version: "0.5.4"
+version: "0.5.5"
 slug: "codex_terminal"
 description: "Persistent OpenAI Codex chat interface for Home Assistant"
 url: "https://github.com/Jhamende/ha-codex-terminal"
