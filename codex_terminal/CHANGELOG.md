@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.10
+
+- Détection de l’état d’authentification via `account/read`
+- Ajout d’un écran `Connecter Codex` lorsque `/data/codex` ne contient plus d’authentification
+- Connexion ChatGPT par device code via `account/login/start` avec `chatgptDeviceCode`
+- Affichage de l’URL de vérification et du code directement dans l’interface Home Assistant
+- Blocage explicite de l’envoi d’un prompt tant que Codex n’est pas authentifié, au lieu d’un échec silencieux
+- Mise à jour automatique de l’interface après `account/login/completed` / `account/updated`
+- Vérification des séquences JavaScript problématiques avant incrémentation de version ; `node --check` reste actif au build
+
 ## 0.5.9
 
 - Correction effective du token `\\n` littéral qui rendait `server.js` invalide
