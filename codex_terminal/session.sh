@@ -33,10 +33,13 @@ while ! codex login status >/dev/null 2>&1; do
 done
 
 echo
-
 echo "Authentification Codex détectée. Démarrage automatique..."
 
-codex_args=()
+# Home Assistant add-ons run inside a container where Codex 0.157+ cannot
+# reliably validate the lifetime of its pid-managed background app-server.
+# Keep the app-server attached to the CLI instead.
+codex_args=(--no-daemon)
+
 case "${PERMISSION_MODE:-default}" in
   full-auto)
     codex_args+=(--full-auto)
@@ -50,6 +53,8 @@ case "${PERMISSION_MODE:-default}" in
     echo "Permissions : mode Codex par défaut."
     ;;
 esac
+
+echo "Mode conteneur : app-server Codex sans daemon (--no-daemon)."
 
 if [[ "${AUTO_RESUME_LAST_SESSION:-false}" == "true" ]]; then
   echo "Reprise automatique de la dernière session Codex disponible."
@@ -66,7 +71,7 @@ exit_code=$?
 echo
 echo "Codex s'est arrêté avec le code ${exit_code}."
 echo "Tu es maintenant dans un terminal classique."
-echo "Relance Codex avec : codex"
+echo "Relance Codex avec : codex --no-daemon"
 echo
 echo "Remarque : le mode Full Access désactive les confirmations et le sandbox Codex."
 echo
