@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.9
+
+- Correction effective du token `\\n` littéral qui rendait `server.js` invalide
+- Vérification après écriture GitHub : le fichier publié ne contient plus la séquence fautive
+- Conservation de `node --check /app/server.js` pendant le build afin de valider la syntaxe avant création de l’image
+- Conservation du démarrage Full Access global de Codex app-server
+
 ## 0.5.8
 
 - Correction du crash au démarrage introduit en 0.5.7 : suppression du `\\n` littéral injecté dans `server.js`
