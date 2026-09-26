@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.4
+
+- Correctif d’installation après blocages constatés sur plusieurs Home Assistant
+- Retrait de Chromium du build local par défaut : le paquet complet ajoute environ 259 Mo installés et une chaîne importante de dépendances
+- Conservation de `bubblewrap`, de l’interface Chat, du choix dynamique du modèle, des étapes repliables, de la durée et des uploads
+- Le support navigateur sera réintroduit via une méthode qui n’alourdit pas le build local de chaque installation
+
 ## 0.5.3
 
 - Rétablissement du nom stable `Codex Terminal` afin de conserver une identité d’add-on cohérente pour Home Assistant Supervisor
