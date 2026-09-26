@@ -5,7 +5,7 @@ fs.mkdirSync(UPLOAD,{recursive:true});
 let state={threadId:null,messages:[],activities:[],permissionMode:process.env.PERMISSION_MODE||'default',workingDirectory:process.env.WORKING_DIRECTORY||'/config'};
 try{state={...state,...JSON.parse(fs.readFileSync(STATE,'utf8'))}}catch{}
 const save=()=>fs.writeFileSync(STATE,JSON.stringify(state,null,2));
-let rpcId=1,pending=new Map(),ready=false,buf='';
+let rpcId=1,pending=new Map(),ready=false,buf='',turnStartedAt=null;
 const codex=spawn('codex',['app-server','--listen','stdio://'],{env:{...process.env,HOME:DATA,CODEX_HOME:path.join(DATA,'.codex')},stdio:['pipe','pipe','inherit']});
 const rpc=(method,params={})=>new Promise((resolve,reject)=>{const id=rpcId++;pending.set(id,{resolve,reject});codex.stdin.write(JSON.stringify({id,method,params})+'\n')});
 function broadcast(o){const s=JSON.stringify(o);wss.clients.forEach(c=>c.readyState===WebSocket.OPEN&&c.send(s))}
@@ -28,8 +28,8 @@ codex.stdout.on('data',d=>{buf+=d;let i;while((i=buf.indexOf('\n'))>=0){const li
  else if(method.includes('/delta')&&method!=='item/agentMessage/delta'&&p.itemId){const a=state.activities.find(x=>x.id===p.itemId);if(a){a.detail=(a.detail||'')+(p.delta||p.output||'');save();broadcast({type:'activity',activity:a})}}
  else if(method==='item/agentMessage/delta')broadcast({type:'delta',delta:p.delta||'',itemId:p.itemId});
  else if(method==='item/completed'&&p.item?.type==='agentMessage'){const text=p.item.text||((p.item.content||[]).map(x=>x.text||'').join(''));add('assistant',text)}
- else if(method==='turn/started')broadcast({type:'status',status:'thinking'});
- else if(method==='turn/completed')broadcast({type:'status',status:'ready'});
+ else if(method==='turn/started'){turnStartedAt=Date.now();state.currentTurnStartedAt=turnStartedAt;save();broadcast({type:'status',status:'thinking',startedAt:turnStartedAt});}
+ else if(method==='turn/completed'){const end=Date.now(),start=turnStartedAt||state.currentTurnStartedAt||end,durationMs=Math.max(0,end-start);state.lastTurnDurationMs=durationMs;state.currentTurnStartedAt=null;turnStartedAt=null;save();broadcast({type:'status',status:'ready',durationMs});}
  else if(method.includes('requestApproval'))broadcast({type:'approval',requestId:m.id,method,params:p});
 }});
 async function boot(){await rpc('initialize',{clientInfo:{name:'ha_codex_terminal',title:'Home Assistant Codex',version:'0.5.0'},capabilities:{experimentalApi:true}});codex.stdin.write(JSON.stringify({method:'initialized',params:{}})+'\n');ready=true;if(state.threadId){try{await rpc('thread/resume',{threadId:state.threadId,excludeTurns:true})}catch(e){console.error('resume failed',e);state.threadId=null;save()}}}
