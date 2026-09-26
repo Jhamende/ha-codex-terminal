@@ -1,4 +1,21 @@
-# Changelog\n\n## 0.4.24\n\n- Ajout de l’option `persistent_screen` (désactivée par défaut)\n- Installation de GNU Screen dans l’image de l’add-on\n- Quand l’option est activée, la session Codex continue de tourner après fermeture du panneau Home Assistant\n- À la réouverture, ttyd se rattache automatiquement à la même session `codex-terminal` avec `screen -D -RR`\n- Un redémarrage de l’add-on/Home Assistant met fin à la session Screen, conformément à l’isolation du conteneur\n\n# Changelog
+# Changelog
+
+## 0.5.0
+
+- Nouvelle interface principale de type chat, conçue pour Home Assistant et les écrans mobiles
+- Remplacement du terminal comme propriétaire de la session par un backend Codex persistant
+- Utilisation directe de `codex app-server` et de ses événements structurés
+- La navigation vers une autre page Home Assistant ne ferme plus Codex et ne crée plus une nouvelle session
+- Conservation du `threadId` et du journal d’affichage dans `/data/codex/ui-state.json`
+- Reconnexion automatique de l’interface au même backend et à la même conversation
+- Reprise du thread après redémarrage de l’add-on avec `thread/resume` sans recharger tout le transcript dans le navigateur
+- Ajout d’un bouton d’upload d’images
+- Stockage persistant des images dans `/data/codex/uploads` et transmission du chemin local à Codex
+- Ajout d’un bouton Nouvelle conversation
+- Sélection visuelle des modes Standard, Full Auto et Full Access
+- Conservation de l’authentification et des rollouts Codex existants dans `/data/codex/.codex`
+
+## 0.4.24\n\n- Ajout de l’option `persistent_screen` (désactivée par défaut)\n- Installation de GNU Screen dans l’image de l’add-on\n- Quand l’option est activée, la session Codex continue de tourner après fermeture du panneau Home Assistant\n- À la réouverture, ttyd se rattache automatiquement à la même session `codex-terminal` avec `screen -D -RR`\n- Un redémarrage de l’add-on/Home Assistant met fin à la session Screen, conformément à l’isolation du conteneur\n\n# Changelog
 
 ## 0.4.25
 
