@@ -2,7 +2,7 @@
 const http=require('http'),fs=require('fs'),path=require('path'),{spawn}=require('child_process'),WebSocket=require('ws'),Busboy=require('busboy');
 const PORT=8099,DATA='/data/codex',UPLOAD=path.join(DATA,'uploads'),STATE=path.join(DATA,'ui-state.json'),PUBLIC='/app/public';
 fs.mkdirSync(UPLOAD,{recursive:true});
-let state={threadId:null,messages:[],activities:[],permissionMode:process.env.PERMISSION_MODE||'default',workingDirectory:process.env.WORKING_DIRECTORY||'/config'};
+let state={threadId:null,messages:[],activities:[],models:[],selectedModel:null,permissionMode:process.env.PERMISSION_MODE||'default',workingDirectory:process.env.WORKING_DIRECTORY||'/config'};
 try{state={...state,...JSON.parse(fs.readFileSync(STATE,'utf8'))}}catch{}
 const save=()=>fs.writeFileSync(STATE,JSON.stringify(state,null,2));
 let rpcId=1,pending=new Map(),ready=false,buf='',turnStartedAt=null;
@@ -32,11 +32,11 @@ codex.stdout.on('data',d=>{buf+=d;let i;while((i=buf.indexOf('\n'))>=0){const li
  else if(method==='turn/completed'){const end=Date.now(),start=turnStartedAt||state.currentTurnStartedAt||end,durationMs=Math.max(0,end-start);state.lastTurnDurationMs=durationMs;state.currentTurnStartedAt=null;turnStartedAt=null;save();broadcast({type:'status',status:'ready',durationMs});}
  else if(method.includes('requestApproval'))broadcast({type:'approval',requestId:m.id,method,params:p});
 }});
-async function boot(){await rpc('initialize',{clientInfo:{name:'ha_codex_terminal',title:'Home Assistant Codex',version:'0.5.0'},capabilities:{experimentalApi:true}});codex.stdin.write(JSON.stringify({method:'initialized',params:{}})+'\n');ready=true;if(state.threadId){try{await rpc('thread/resume',{threadId:state.threadId,excludeTurns:true})}catch(e){console.error('resume failed',e);state.threadId=null;save()}}}
+async function boot(){await rpc('initialize',{clientInfo:{name:'ha_codex_terminal',title:'Home Assistant Codex',version:'0.5.0'},capabilities:{experimentalApi:true}});codex.stdin.write(JSON.stringify({method:'initialized',params:{}})+'\n');ready=true;try{const ml=await rpc('model/list',{includeHidden:false});state.models=(ml.data||[]).map(x=>({model:x.model||x.id,displayName:x.displayName||x.display_name||x.model||x.id,description:x.description||''})).filter(x=>x.model);save()}catch(e){console.error('model/list failed',e)};if(state.threadId){try{await rpc('thread/resume',{threadId:state.threadId,excludeTurns:true})}catch(e){console.error('resume failed',e);state.threadId=null;save()}}}
 boot().catch(e=>console.error('Codex app-server init failed',e));
 function policy(){if(state.permissionMode==='full-access')return{approvalPolicy:'never',sandbox:'danger-full-access'};if(state.permissionMode==='full-auto')return{approvalPolicy:'never',sandbox:'workspace-write'};return{approvalPolicy:'on-request',sandbox:'workspace-write'}}
-async function ensureThread(){if(state.threadId)return state.threadId;if(!ready)throw new Error('Codex démarre encore');const r=await rpc('thread/start',{cwd:state.workingDirectory,...policy()});state.threadId=r.thread.id;save();broadcast({type:'thread',threadId:state.threadId});return state.threadId}
-async function send(text,attachments=[]){const id=await ensureThread();add('user',text,{attachments});const input=[];if(text)input.push({type:'text',text});for(const f of attachments)input.push({type:'localImage',path:f.path});return rpc('turn/start',{threadId:id,input,...policy()})}
+async function ensureThread(){if(state.threadId)return state.threadId;if(!ready)throw new Error('Codex démarre encore');const r=await rpc('thread/start',{cwd:state.workingDirectory,...(state.selectedModel?{model:state.selectedModel}:{}),...policy()});state.threadId=r.thread.id;save();broadcast({type:'thread',threadId:state.threadId});return state.threadId}
+async function send(text,attachments=[]){const id=await ensureThread();add('user',text,{attachments});const input=[];if(text)input.push({type:'text',text});for(const f of attachments)input.push({type:'localImage',path:f.path});return rpc('turn/start',{threadId:id,input,...(state.selectedModel?{model:state.selectedModel}:{}),...policy()})}
 const server=http.createServer((req,res)=>{
  const u=new URL(req.url,'http://localhost'),pn=u.pathname;
  if(req.method==='GET'&&(pn==='/'||pn.endsWith('/'))){res.setHeader('content-type','text/html;charset=utf-8');res.setHeader('cache-control','no-store');return fs.createReadStream(path.join(PUBLIC,'index.html')).pipe(res)}
@@ -48,7 +48,7 @@ const wss=new WebSocket.Server({noServer:true});server.on('upgrade',(req,socket,
 wss.on('connection',ws=>{ws.send(JSON.stringify({type:'state',state}));ws.on('message',async raw=>{let m;try{m=JSON.parse(raw)}catch{return}try{
  if(m.type==='send')await send(m.text||'',m.attachments||[]);
  else if(m.type==='newThread'){state.threadId=null;state.messages=[];state.activities=[];save();broadcast({type:'state',state})}
- else if(m.type==='settings'){if(['default','full-auto','full-access'].includes(m.permissionMode))state.permissionMode=m.permissionMode;save();broadcast({type:'state',state})}
+ else if(m.type==='settings'){if(['default','full-auto','full-access'].includes(m.permissionMode))state.permissionMode=m.permissionMode;if(m.selectedModel===null||state.models.some(x=>x.model===m.selectedModel))state.selectedModel=m.selectedModel;save();broadcast({type:'state',state})}
  else if(m.type==='approval'&&m.id)codex.stdin.write(JSON.stringify({id:m.id,result:{decision:m.decision}})+'\n');
 }catch(e){ws.send(JSON.stringify({type:'error',message:e.message||JSON.stringify(e)}))}})});
 server.listen(PORT,'0.0.0.0',()=>console.log('Persistent Codex Chat UI listening on',PORT));
