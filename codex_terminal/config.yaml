@@ -1,5 +1,5 @@
 name: "Codex Terminal"
-version: "0.4.23"
+version: "0.4.24"
 slug: "codex_terminal"
 description: "OpenAI Codex CLI in a classic Home Assistant terminal"
 url: "https://github.com/Jhamende/ha-codex-terminal"
@@ -27,9 +27,9 @@ options:
   working_directory: "/config"
   terminal_font_size: 13
   auto_resume_last_session: false
-  permission_mode: "default"
+  permission_mode: "default"\n  persistent_screen: false
 schema:
   working_directory: str
   terminal_font_size: "int(10,30)"
   auto_resume_last_session: bool
-  permission_mode: "list(default|full-auto|full-access)"
+  permission_mode: "list(default|full-auto|full-access)"\n  persistent_screen: bool
