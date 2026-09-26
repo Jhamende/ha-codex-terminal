@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.3
+
+- Rétablissement du nom stable `Codex Terminal` afin de conserver une identité d’add-on cohérente pour Home Assistant Supervisor
+- Conservation de l’interface Chat et du `slug: codex_terminal`
+- Installation du paquet système `bubblewrap` pour supprimer l’avertissement de sandbox Codex au démarrage
+- Inclut toutes les fonctions 0.5.1/0.5.2 : étapes repliables, durée, choix dynamique du modèle et Chromium
+
 ## 0.5.2
 
 - Ajout du sélecteur de modèle dans l’en-tête de l’interface Chat
