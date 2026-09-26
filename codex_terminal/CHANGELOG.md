@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.23
+
+- Ajout d’un mode `Sélection` adapté aux écrans tactiles et à la WebView Android Home Assistant
+- Ajout du bouton `Copier` pour envoyer la sélection au presse-papiers
+- Le mode sélection active explicitement la sélection native du texte dans le terminal ttyd
+- Le bouton `↓ Bas` quitte le mode sélection et rend le focus au terminal
+
 ## 0.4.22
 
 - Correction de la compatibilité avec Codex CLI 0.157.0 dans le conteneur Home Assistant
