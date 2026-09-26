@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.7
+
+- Correction supplémentaire de Full Access dans le conteneur Home Assistant
+- Lorsque `permission_mode` est `full-access`, démarrage de `codex app-server` avec le flag global officiel `--dangerously-bypass-approvals-and-sandbox`
+- Conservation de `thread/settings/update` pour synchroniser les permissions de la session active
+- Évite que l’exécuteur Linux bwrap soit encore sélectionné malgré l’affichage Full Access
+
 ## 0.5.6
 
 - Correction du mode Full Access sur les conversations déjà actives
