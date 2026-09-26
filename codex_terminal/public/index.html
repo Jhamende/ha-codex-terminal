@@ -1,28 +1,13 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#111827">
-  <title>Codex Terminal</title>
-  <link rel="stylesheet" href="./vendor/xterm.css">
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <main id="app">
-    <div id="status" aria-live="polite">Connexion…</div>
-    <div id="terminal" aria-label="Terminal Codex"></div>
-    <nav id="mobile-tools" aria-label="Commandes terminal">
-      <button data-key="\u001b[A" title="Flèche haut">↑</button>
-      <button data-key="\u001b[B" title="Flèche bas">↓</button>
-      <button data-key="\u0003" title="Ctrl+C">Ctrl+C</button>
-      <button data-key="/resume\r" title="Reprendre une conversation Codex">/resume</button>
-      <button id="keyboard" title="Afficher le clavier">Clavier</button>
-    </nav>
-  </main>
-  <script src="./vendor/xterm.js"></script>
-  <script src="./vendor/addon-fit.js"></script>
-  <script src="./vendor/addon-web-links.js"></script>
-  <script src="./app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#15171b"><title>Codex</title><style>
+:root{color-scheme:dark;--bg:#111318;--panel:#191c22;--line:#2b3038;--text:#e8eaed;--muted:#9aa0a6;--accent:#7aa2f7}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,sans-serif;height:100vh;display:flex;flex-direction:column}header{height:58px;display:flex;align-items:center;gap:9px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:3}header strong{flex:1;font-size:17px}button,select{background:#252a32;color:var(--text);border:1px solid #39404a;border-radius:8px;padding:9px 10px}.status{font-size:12px;color:var(--muted)}#chat{flex:1;overflow:auto;padding:20px max(14px,calc((100% - 850px)/2));padding-bottom:125px}.msg{margin-bottom:24px}.who{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px}.bubble{white-space:pre-wrap;line-height:1.58}.user .bubble{background:#242933;border:1px solid #323945;border-radius:14px;padding:12px 14px;margin-left:auto;max-width:85%}.attachment{display:inline-block;margin:8px 6px 0 0;padding:7px 9px;border:1px solid #39404a;border-radius:8px;color:#b8c7da;font-size:12px}.composer{position:fixed;bottom:0;left:0;right:0;padding:10px max(10px,calc((100% - 850px)/2));background:linear-gradient(transparent,var(--bg) 24%)}.box{display:flex;align-items:flex-end;gap:7px;background:#20242b;border:1px solid #383e48;border-radius:17px;padding:8px}textarea{flex:1;resize:none;max-height:160px;min-height:42px;background:transparent;border:0;outline:0;color:var(--text);font:inherit;padding:10px}.send{background:var(--accent);color:#08111f;font-weight:800}.files{font-size:12px;color:var(--muted);padding:0 8px 6px}.badge{font-size:11px;padding:4px 7px;border:1px solid #4a5260;border-radius:20px;color:#c6ccd4}@media(max-width:600px){header select{max-width:105px}.status{display:none}#chat{padding-top:14px}}</style></head><body>
+<header><strong>Codex</strong><span id="thread" class="badge">Nouvelle</span><span id="status" class="status">Connexion…</span><select id="perm"><option value="default">Standard</option><option value="full-auto">Full Auto</option><option value="full-access">Full Access</option></select><button id="new" title="Nouvelle conversation">＋</button></header>
+<main id="chat"></main><div class="composer"><div id="files" class="files"></div><div class="box"><input id="upload" type="file" accept="image/*" multiple hidden><button id="attach" title="Ajouter une image">📎</button><textarea id="input" placeholder="Demande quelque chose à Codex…"></textarea><button class="send" id="send">➤</button></div></div>
+<script>
+const chat=document.getElementById('chat'),input=document.getElementById('input'),filesEl=document.getElementById('files'),perm=document.getElementById('perm');let attachments=[],state={messages:[]},ws;
+const base=()=>location.pathname.endsWith('/')?location.pathname:location.pathname+'/';
+function render(){chat.innerHTML='';for(const m of state.messages||[]){const d=document.createElement('div');d.className='msg '+m.role;const w=document.createElement('div');w.className='who';w.textContent=m.role==='user'?'Vous':'Codex';const b=document.createElement('div');b.className='bubble';b.textContent=m.text||'';d.append(w,b);for(const a of m.attachments||[]){const x=document.createElement('span');x.className='attachment';x.textContent='🖼 '+(a.name||'image');d.appendChild(x)}chat.appendChild(d)}chat.scrollTop=chat.scrollHeight;document.getElementById('thread').textContent=state.threadId?'Session active':'Nouvelle'}
+function connect(){const u=new URL(base()+'ws',location.href);u.protocol=location.protocol==='https:'?'wss:':'ws:';ws=new WebSocket(u);ws.onopen=()=>document.getElementById('status').textContent='Connecté';ws.onclose=()=>{document.getElementById('status').textContent='Reconnexion…';setTimeout(connect,1200)};ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.type==='state'){state=m.state;perm.value=state.permissionMode||'default';render()}else if(m.type==='message'){state.messages.push(m.message);render()}else if(m.type==='thread'){state.threadId=m.threadId;render()}else if(m.type==='status')document.getElementById('status').textContent=m.status==='thinking'?'Codex travaille…':'Connecté';else if(m.type==='error')document.getElementById('status').textContent='Erreur'}}
+connect();
+document.getElementById('attach').onclick=()=>document.getElementById('upload').click();document.getElementById('upload').onchange=async e=>{const fd=new FormData();for(const f of e.target.files)fd.append('file',f);const r=await fetch(base()+'upload',{method:'POST',body:fd});attachments.push(...(await r.json()).files);filesEl.textContent=attachments.map(x=>'🖼 '+x.name).join('  ')};
+function send(){const text=input.value.trim();if(!text&&!attachments.length)return;if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'send',text,attachments}));input.value='';attachments=[];filesEl.textContent=''}document.getElementById('send').onclick=send;input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}};perm.onchange=()=>ws.send(JSON.stringify({type:'settings',permissionMode:perm.value}));document.getElementById('new').onclick=()=>{if(confirm('Démarrer une nouvelle conversation ?'))ws.send(JSON.stringify({type:'newThread'}))}
+</script></body></html>
