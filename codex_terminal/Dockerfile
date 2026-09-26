@@ -2,12 +2,12 @@ FROM alpine:3.23
 ARG BUILD_VERSION
 ARG BUILD_ARCH
 LABEL io.hass.version="${BUILD_VERSION}" io.hass.type="app" io.hass.arch="${BUILD_ARCH}"
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 TERM=xterm-256color COLORTERM=truecolor
-RUN apk add --no-cache bash ca-certificates curl git jq nodejs npm openssh-client python3 ripgrep screen ttyd \
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 TERM=xterm-256color COLORTERM=truecolor CHROME_BIN=/usr/bin/chromium-browser CHROMIUM_BIN=/usr/bin/chromium-browser
+RUN apk add --no-cache bash ca-certificates chromium curl git jq nodejs npm openssh-client python3 ripgrep screen ttyd \
     && npm install --global @openai/codex@0.157.0 \
     && codex --version \
     && npm cache clean --force \
-    && mkdir -p /data/codex/.codex /data/codex/uploads /config /share /app/public
+    && mkdir -p /data/codex/.codex /data/codex/uploads /data/codex/screenshots /config /share /app/public
 WORKDIR /app
 COPY package.json /app/package.json
 RUN npm install --omit=dev && npm cache clean --force
