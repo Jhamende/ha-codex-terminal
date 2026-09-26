@@ -12,6 +12,7 @@ WORKDIR /app
 COPY package.json /app/package.json
 RUN npm install --omit=dev && npm cache clean --force
 COPY server.js /app/server.js
+RUN node --check /app/server.js
 COPY public/index.html /app/public/index.html
 COPY run.sh /run.sh
 COPY prepare-index.sh /usr/local/bin/prepare-ttyd-index
