@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.5
+
+- Rétablissement de Chromium après confirmation que la 0.5.3 s’installe correctement sur Home Assistant
+- Conservation de `bubblewrap` système
+- Rétablissement de `CHROME_BIN` et `CHROMIUM_BIN` vers `/usr/bin/chromium-browser`
+- Conservation du dossier `/data/codex/screenshots`
+- Aucune régression des fonctions Chat, session persistante, modèles, activités repliables, durée ou uploads
+
 ## 0.5.4
 
 - Correctif d’installation après blocages constatés sur plusieurs Home Assistant
