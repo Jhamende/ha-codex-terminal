@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.22
+
+- Correction de la compatibilité avec Codex CLI 0.157.0 dans le conteneur Home Assistant
+- Lancement systématique de Codex avec `--no-daemon` pour éviter l'échec du pid-managed app-server (`failed to read start time`)
+- La reprise automatique utilise également `--no-daemon`
+- Conservation des modes de permissions `default`, `full-auto` et `full-access`
+
 ## 0.4.21
 
 - Mise à jour automatique de Codex CLI de `0.156.1` vers `0.157.0`
