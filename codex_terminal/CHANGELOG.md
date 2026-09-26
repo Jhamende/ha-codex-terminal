@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.8
+
+- Correction du crash au démarrage introduit en 0.5.7 : suppression du `\\n` littéral injecté dans `server.js`
+- Restauration du démarrage de l’interface Codex Chat
+- Conservation du démarrage app-server en Full Access global lorsque ce mode est configuré
+- Ajout de `node --check /app/server.js` au build Docker afin qu’une future erreur de syntaxe bloque le build avant publication
+
 ## 0.5.7
 
 - Correction supplémentaire de Full Access dans le conteneur Home Assistant
