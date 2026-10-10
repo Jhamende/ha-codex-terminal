@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.20
+
+- Mise à jour automatique de Codex CLI de `0.162.0` vers `0.162.1`
+- Version détectée via le canal stable npm `@openai/codex`
 ## 0.5.19
 
 - Mise à jour automatique de Codex CLI de `0.161.0` vers `0.162.0`
